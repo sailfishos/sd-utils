@@ -36,6 +36,12 @@ if [ "$ACTION" = "add" ]; then
         # In case device does not have UUID lets create one for it based on
         # the card identification.
         PKNAME=$(lsblk -n -o PKNAME ${DEVNAME})
+
+        # If there is no PKNAME try NAME instead.
+        if [ -z "${PKNAME}" ]; then
+            PKNAME=$(lsblk -n -o NAME ${DEVNAME} | head -n 1)
+        fi
+
         if [ -e "/sys/block/${PKNAME}/device/cid" ]; then
             CID=$(cat /sys/block/${PKNAME}/device/cid)
             if [ -n "${CID}" ]; then
