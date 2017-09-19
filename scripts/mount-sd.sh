@@ -28,8 +28,14 @@ if [ "$ACTION" = "add" ]; then
     eval "$(/sbin/blkid -c /dev/null -o export /dev/$2)"
 
     if [ -z "${TYPE}" ]; then
-        systemd-cat -t mount-sd /bin/echo "ERROR: Filesystem type missing for ${DEVNAME}."
-        exit 1
+
+        # In case filesystem type is missing, try reading it.
+        TYPE=$(lsblk -n -o FSTYPE ${DEVNAME} | tail -n 1)
+
+        if [ -z "${TYPE}" ]; then
+            systemd-cat -t mount-sd /bin/echo "ERROR: Filesystem type missing for ${DEVNAME}."
+            exit 1
+        fi
     fi
 
     if [ -z "${UUID}" ]; then
