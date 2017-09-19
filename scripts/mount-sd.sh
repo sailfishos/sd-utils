@@ -41,7 +41,7 @@ if [ "$ACTION" = "add" ]; then
     if [ -z "${UUID}" ]; then
         # In case device does not have UUID lets create one for it based on
         # the card identification.
-        PKNAME=$(lsblk -n -o PKNAME ${DEVNAME})
+        PKNAME=$(lsblk -n -o PKNAME ${DEVNAME} | tail -n 1)
 
         # If there is no PKNAME try NAME instead.
         if [ -z "${PKNAME}" ]; then
