@@ -51,7 +51,7 @@ if [ "$ACTION" = "add" ]; then
         if [ -e "/sys/block/${PKNAME}/device/cid" ]; then
             CID=$(cat /sys/block/${PKNAME}/device/cid)
             if [ -n "${CID}" ]; then
-                IDNAME=$(lsblk -n -o NAME ${DEVNAME})
+                IDNAME=$(lsblk -n -o NAME ${DEVNAME} | tail -1 | cut -d "-" -f2)
                 UUID="${CID}-${IDNAME}"
             fi
         fi
