@@ -28,14 +28,20 @@ if [ "$ACTION" = "add" ]; then
     eval "$(/sbin/blkid -c /dev/null -o export /dev/$2)"
 
     if [ -z "${TYPE}" ]; then
-        systemd-cat -t mount-sd /bin/echo "ERROR: Filesystem type missing for ${DEVNAME}."
-        exit 1
+
+        # In case filesystem type is missing, try reading it.
+        TYPE=$(lsblk -n -o FSTYPE ${DEVNAME} | tail -n 1)
+
+        if [ -z "${TYPE}" ]; then
+            systemd-cat -t mount-sd /bin/echo "ERROR: Filesystem type missing for ${DEVNAME}."
+            exit 1
+        fi
     fi
 
     if [ -z "${UUID}" ]; then
         # In case device does not have UUID lets create one for it based on
         # the card identification.
-        PKNAME=$(lsblk -n -o PKNAME ${DEVNAME})
+        PKNAME=$(lsblk -n -o PKNAME ${DEVNAME} | tail -n 1)
 
         # If there is no PKNAME try NAME instead.
         if [ -z "${PKNAME}" ]; then
@@ -45,7 +51,7 @@ if [ "$ACTION" = "add" ]; then
         if [ -e "/sys/block/${PKNAME}/device/cid" ]; then
             CID=$(cat /sys/block/${PKNAME}/device/cid)
             if [ -n "${CID}" ]; then
-                IDNAME=$(lsblk -n -o NAME ${DEVNAME})
+                IDNAME=$(lsblk -n -o NAME ${DEVNAME} | tail -1 | cut -d "-" -f2)
                 UUID="${CID}-${IDNAME}"
             fi
         fi
