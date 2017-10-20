@@ -5,7 +5,7 @@ Release:    1
 Group:      System/Base
 License:    MIT
 BuildArch:  noarch
-URL:        https://github.com/nemomobile/sd-utils/
+URL:        https://git.merproject.org/mer-core/sd-utils
 Source0:    %{name}-%{version}.tar.gz
 BuildRequires:  systemd
 Requires:   systemd
